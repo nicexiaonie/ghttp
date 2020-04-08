@@ -7,4 +7,7 @@ type Logger struct {
 
 }
 
-var logger Logger
+var logger = Logger{
+	Infof: func(format string, args ...interface{}) {},
+	Errorf: func(format string, args ...interface{}) {},
+}
