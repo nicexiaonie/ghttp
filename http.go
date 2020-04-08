@@ -10,13 +10,7 @@ import (
 	"strconv"
 )
 
-type loggerModel struct {
-	Output func(format string, args ...interface{})
-}
 
-var logger = loggerModel{
-	Output: func(format string, args ...interface{}) {},
-}
 
 var client *http.Client
 
@@ -30,7 +24,6 @@ func init() {
 	}
 }
 
-
 // 返回结果
 type Result struct {
 	StatusCode    int
@@ -42,6 +35,7 @@ type Result struct {
 
 // FormValues
 type FromValues map[string]interface{}
+
 func (v FromValues) EncodeJson() string {
 	contextStr, _ := buildJson(v)
 	return string(contextStr)
@@ -98,4 +92,3 @@ func buildJson(data interface{}) ([]byte, error) {
 		return buf.Bytes(), nil
 	}
 }
-

@@ -9,10 +9,8 @@ import (
 )
 
 // 设置日志输出函数
-func SetLogger(callFunc func(format string, args ...interface{})) {
-	logger = loggerModel{
-		Output: callFunc,
-	}
+func SetLogger(l Logger) {
+	logger = l
 }
 
 // 设置http.Transport参数
@@ -23,7 +21,7 @@ func SetTransport(t http.Transport) {
 // 发送post请求
 func Post(requestUrl string, context []byte, header map[string]string, timeout time.Duration) (Result, error) {
 
-	logger.Output("request url:%s, content:%s", requestUrl, context)
+	logger.Infof("request url:%s, content:%s", requestUrl, context)
 	result := Result{}
 
 	req, err := http.NewRequest("POST", requestUrl, bytes.NewReader(context))
@@ -98,7 +96,7 @@ func PostJson(url string, context []byte, header map[string]string, timeout time
 // 发送Get请求
 func Get(requestUrl string, context FromValues, header map[string]string, timeout time.Duration) (Result, error) {
 
-	logger.Output("request url:%s, content:%s", requestUrl, context)
+	logger.Infof("request url:%s, content:%s", requestUrl, context)
 	result := Result{}
 	requestUrl += "?" + context.Encode()
 	req, err := http.NewRequest("GET", requestUrl, nil)
