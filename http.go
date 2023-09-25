@@ -10,8 +10,6 @@ import (
 	"strconv"
 )
 
-
-
 var client *http.Client
 
 func init() {
@@ -24,7 +22,7 @@ func init() {
 	}
 }
 
-// 返回结果
+// Result 返回结果
 type Result struct {
 	StatusCode    int
 	Status        string
@@ -33,16 +31,17 @@ type Result struct {
 	ContentLength int64
 }
 
-// FormValues
+// FromValues FormValues
 type FromValues map[string]interface{}
 
 func (v FromValues) EncodeJson() string {
 	contextStr, _ := buildJson(v)
 	return string(contextStr)
 }
-func (v FromValues) Encode() string {
+
+func (v FromValues) Encode() []byte {
 	if v == nil {
-		return ""
+		return []byte("")
 	}
 	var buf bytes.Buffer
 	keys := make([]string, 0, len(v))
@@ -76,8 +75,9 @@ func (v FromValues) Encode() string {
 			buf.WriteString(string(value))
 		}
 	}
-	return buf.String()
+	return buf.Bytes()
 }
+
 func (v FromValues) Add(key string, value interface{}) {
 	v[key] = value
 }

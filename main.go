@@ -2,31 +2,23 @@ package ghttp
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
 	"unsafe"
 )
 
-// 设置日志输出函数
-func SetLogger(l Logger) {
-	logger = l
-}
+// Post 发送post请求
+func Post(url string, context FromValues, header map[string]string, timeout time.Duration) (Result, error) {
 
-// 设置http.Transport参数
-func SetTransport(t http.Transport) {
-	client.Transport = &t
-}
-
-// 发送post请求
-func Post(requestUrl string, context []byte, header map[string]string, timeout time.Duration) (Result, error) {
-
-	logger.Infof("request url:%s, content:%s", requestUrl, context)
 	result := Result{}
 
-	req, err := http.NewRequest("POST", requestUrl, bytes.NewReader(context))
+	req, err := http.NewRequest("POST", url, bytes.NewReader(context.Encode()))
 	if err != nil {
-		// handle error
+		return result, err
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -54,12 +46,22 @@ func Post(requestUrl string, context []byte, header map[string]string, timeout t
 
 }
 
-// 发送PostJson请求
-func PostJson(url string, context []byte, header map[string]string, timeout time.Duration) (Result, error) {
+func PostRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
+	for i := 1; i <= retry; i++ {
+		post, err := Post(url, context, header, timeout)
+		if err == nil && post.StatusCode == 200 {
+			return post, err
+		}
+	}
+	return Result{}, errors.New(fmt.Sprintf("request error. url:%s", url))
+}
+
+// PostJson 发送PostJson请求
+func PostJson(url string, context FromValues, header map[string]string, timeout time.Duration) (Result, error) {
 
 	result := Result{}
 
-	reader := bytes.NewReader(context)
+	reader := bytes.NewReader(context.Encode())
 	request, err := http.NewRequest("POST", url, reader)
 	if err != nil {
 		return result, err
@@ -73,7 +75,12 @@ func PostJson(url string, context []byte, header map[string]string, timeout time
 		return result, err
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
 
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -88,18 +95,25 @@ func PostJson(url string, context []byte, header map[string]string, timeout time
 	result.Status = resp.Status
 	result.Header = resp.Header
 	result.ContentLength = resp.ContentLength
-
 	return result, err
-
 }
 
-// 发送Get请求
-func Get(requestUrl string, context FromValues, header map[string]string, timeout time.Duration) (Result, error) {
+func PostJsonRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
+	for i := 1; i <= retry; i++ {
+		post, err := PostJson(url, context, header, timeout)
+		if err == nil && post.StatusCode == 200 {
+			return post, err
+		}
+	}
+	return Result{}, errors.New(fmt.Sprintf("request error. url:%s", url))
+}
 
-	logger.Infof("request url:%s, content:%s", requestUrl, context)
+// Get 发送Get请求
+func Get(url string, context FromValues, header map[string]string, timeout time.Duration) (Result, error) {
+
 	result := Result{}
-	requestUrl += "?" + context.Encode()
-	req, err := http.NewRequest("GET", requestUrl, nil)
+	url += "?" + string(context.Encode())
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return result, err
 	}
@@ -111,7 +125,12 @@ func Get(requestUrl string, context FromValues, header map[string]string, timeou
 		return result, err
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -127,4 +146,14 @@ func Get(requestUrl string, context FromValues, header map[string]string, timeou
 
 	return result, err
 
+}
+
+func GetRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
+	for i := 1; i <= retry; i++ {
+		post, err := Get(url, context, header, timeout)
+		if err == nil && post.StatusCode == 200 {
+			return post, err
+		}
+	}
+	return Result{}, errors.New(fmt.Sprintf("request error. url:%s", url))
 }
