@@ -8,10 +8,12 @@ import (
 
 func main() {
 	requestParams := ghttp.FromValues{}
+	requestParams.Add("name", "1111")
+	requestParams.Add("phone", "1111")
+	requestParams.Add("password", "1111")
+	req, err := ghttp.PostJsonRetry("https://saishi.hainanxingdong.com/manage/club/create", requestParams, map[string]string{}, time.Second*6, 1)
 
-	req, err := ghttp.GetRetry("https://www.baidu.com/", requestParams, map[string]string{}, time.Second*6, 10)
-
-	fmt.Println(err)
+	fmt.Printf("err0r:  %s", err)
 	fmt.Printf("%+v", req)
 
 }

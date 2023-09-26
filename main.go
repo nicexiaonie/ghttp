@@ -49,7 +49,7 @@ func Post(url string, context FromValues, header map[string]string, timeout time
 func PostRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
 	for i := 1; i <= retry; i++ {
 		post, err := Post(url, context, header, timeout)
-		if err == nil && post.StatusCode == 200 {
+		if err == nil {
 			return post, err
 		}
 	}
@@ -101,7 +101,7 @@ func PostJson(url string, context FromValues, header map[string]string, timeout 
 func PostJsonRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
 	for i := 1; i <= retry; i++ {
 		post, err := PostJson(url, context, header, timeout)
-		if err == nil && post.StatusCode == 200 {
+		if err == nil {
 			return post, err
 		}
 	}
@@ -151,7 +151,7 @@ func Get(url string, context FromValues, header map[string]string, timeout time.
 func GetRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
 	for i := 1; i <= retry; i++ {
 		post, err := Get(url, context, header, timeout)
-		if err == nil && post.StatusCode == 200 {
+		if err == nil {
 			return post, err
 		}
 	}
