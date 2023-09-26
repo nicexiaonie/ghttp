@@ -61,7 +61,7 @@ func PostJson(url string, context FromValues, header map[string]string, timeout 
 
 	result := Result{}
 
-	reader := bytes.NewReader(context.Encode())
+	reader := bytes.NewReader([]byte(context.EncodeJson()))
 	request, err := http.NewRequest("POST", url, reader)
 	if err != nil {
 		return result, err
