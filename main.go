@@ -23,7 +23,9 @@ func Post(url string, context FromValues, header map[string]string, timeout time
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	client.Timeout = timeout
-
+	for hk, hv := range header {
+		req.Header.Set(hk, hv)
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return result, err
@@ -67,6 +69,9 @@ func PostJson(url string, context FromValues, header map[string]string, timeout 
 		return result, err
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	for hk, hv := range header {
+		request.Header.Set(hk, hv)
+	}
 
 	client.Timeout = timeout
 	resp, err := client.Do(request)
@@ -117,7 +122,9 @@ func Get(url string, context FromValues, header map[string]string, timeout time.
 	if err != nil {
 		return result, err
 	}
-
+	for hk, hv := range header {
+		req.Header.Set(hk, hv)
+	}
 	client.Timeout = timeout
 
 	resp, err := client.Do(req)
