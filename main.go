@@ -49,13 +49,14 @@ func Post(url string, context FromValues, header map[string]string, timeout time
 }
 
 func PostRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
+	err := errors.New("")
 	for i := 1; i <= retry; i++ {
 		post, err := Post(url, context, header, timeout)
 		if err == nil {
 			return post, err
 		}
 	}
-	return Result{}, errors.New(fmt.Sprintf("request error. url:%s", url))
+	return Result{}, errors.New(fmt.Sprintf("request error. url:%s, error:%s", url, err.Error()))
 }
 
 // PostJson 发送PostJson请求
@@ -104,13 +105,14 @@ func PostJson(url string, context FromValues, header map[string]string, timeout 
 }
 
 func PostJsonRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
+	err := errors.New("")
 	for i := 1; i <= retry; i++ {
 		post, err := PostJson(url, context, header, timeout)
 		if err == nil {
 			return post, err
 		}
 	}
-	return Result{}, errors.New(fmt.Sprintf("request error. url:%s", url))
+	return Result{}, errors.New(fmt.Sprintf("request error. url:%s, error:%s", url, err.Error()))
 }
 
 // Get 发送Get请求
@@ -156,11 +158,12 @@ func Get(url string, context FromValues, header map[string]string, timeout time.
 }
 
 func GetRetry(url string, context FromValues, header map[string]string, timeout time.Duration, retry int) (Result, error) {
+	err := errors.New("")
 	for i := 1; i <= retry; i++ {
 		post, err := Get(url, context, header, timeout)
 		if err == nil {
 			return post, err
 		}
 	}
-	return Result{}, errors.New(fmt.Sprintf("request error. url:%s", url))
+	return Result{}, errors.New(fmt.Sprintf("request error. url:%s, error:%s", url, err.Error()))
 }
